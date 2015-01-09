@@ -18,7 +18,7 @@
         android:background="@drawable/card_background_selector">
         <EditText
             android:id="@+id/newNoteTitle"
-            android:text="Note Title"
+            android:hint="Note Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
@@ -26,7 +26,7 @@
 
         <EditText
             android:id="@+id/newNoteContent"
-            android:text="Note Content"
+            android:hint="Note Content"
             android:layout_below="@id/newNoteTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

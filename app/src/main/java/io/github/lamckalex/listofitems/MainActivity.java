@@ -3,17 +3,22 @@ package io.github.lamckalex.listofitems;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends Activity {
 
     DatabaseHandler db;
+    CustomAdapter ca;
+    List<CustomDataObject> cdoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,10 +27,11 @@ public class MainActivity extends Activity {
 
         db = new DatabaseHandler(this);
 
-        CustomAdapter ca = new CustomAdapter(this);
+        ca = new CustomAdapter(this);
         ca.populateList(getDataForListView());
         ListView mylistview = (ListView)findViewById(R.id.listView);
         mylistview.setAdapter(ca);
+        registerForContextMenu(mylistview);
     }
 
 
@@ -53,19 +59,7 @@ public class MainActivity extends Activity {
 
     public List<CustomDataObject> getDataForListView()
     {
-        List<CustomDataObject> cdoList = new ArrayList<CustomDataObject>();
-
-        cdoList.add(new CustomDataObject("Hello","World"));
-        cdoList.add(new CustomDataObject("Goodbye","World"));
-        cdoList.add(new CustomDataObject("Hello","World"));
-        cdoList.add(new CustomDataObject("Goodbye","World"));
-        cdoList.add(new CustomDataObject("Hello","World"));
-        cdoList.add(new CustomDataObject("Goodbye","World"));
-        cdoList.add(new CustomDataObject("Hello","World"));
-        cdoList.add(new CustomDataObject("Goodbye","World"));
-        cdoList.add(new CustomDataObject("Hello","World"));
-        cdoList.add(new CustomDataObject("Goodbye","World"));
-
+        cdoList = db.getAllNotes();
         return cdoList;
     }
 
@@ -84,9 +78,46 @@ public class MainActivity extends Activity {
                 String newTitle =data.getStringExtra("newTitle");
                 String newContent =data.getStringExtra("newContent");
                 db.addNote(new CustomDataObject(newTitle, newContent));
+                resetList();
             }
-            if (resultCode == RESULT_CANCELED) {}
+            //if (resultCode == RESULT_CANCELED) {}
         }
+    }
+
+    @Override
+    public void onCreateContextMenu (ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        if(v.getId() == R.id.listView)
+        {
+            super.onCreateContextMenu(menu, v, menuInfo);
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.list_item_context_menu, menu);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            /*
+            case R.id.edit:
+                editNote(info.id);
+                return true;
+             */
+            case R.id.delete:
+                Log.d("HELP", "DELETE INFO.ID"+info.id);
+                Log.d("HELP", "DELETE INFO.POSITION"+info.position);
+                db.deleteNote(cdoList.get((int)info.id));
+                resetList();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    void resetList()
+    {
+        ca.notifyDataSetChanged();
+        ca.populateList(getDataForListView());
     }
 }
 
