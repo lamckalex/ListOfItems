@@ -71,8 +71,8 @@ public class CustomAdapter extends BaseAdapter{
         TextView t2 = (TextView)arg1.findViewById(R.id.textView2);
 
         CustomDataObject cdo = cdoList.get(arg0);
-        t1.setText(cdo.NoteTitle);
-        t2.setText(cdo.NoteContent);
+        t1.setText(cdo.noteTitle);
+        t2.setText(cdo.noteContent);
 
         return arg1;
     }
